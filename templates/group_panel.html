@@ -1,0 +1,35 @@
+{% extends "index.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h1 class="mb-4">Qrup Paneli</h1>
+    <form method="GET" class="mb-3">
+        <div class="form-inline mb-4">
+            <input type="text" name="q" class="form-control mr-sm-2" placeholder="Axtarış adını daxil edin">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Axtar</button>
+            <!-- <button type="submit" class="btn btn-primary">Axtar</button> -->
+        </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Qrup</th>
+                <th style="width: 200px;" scope="col">Əməliyyatlar</th>
+            </tr>
+        </thead>
+        <tbody>        
+            {% for group in groups %}
+            <tr>
+                <td>{{ group.group_number }}</td>
+                <td>
+                    <a href="{% url 'update_group' group.pk %}" class="btn btn-sm btn-info">Düzəliş et</a>
+                    <a href="{% url 'delete_group' group.pk %}" class="btn btn-sm btn-danger">Sil</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}

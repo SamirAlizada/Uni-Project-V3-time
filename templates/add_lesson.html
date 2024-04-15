@@ -1,0 +1,93 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<style>
+    .form-group select {
+        max-height: 100px; /* İstediğiniz boyutu buraya yazın */
+        overflow-y: auto;
+    }
+</style>
+
+<br>
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="alert alert-info" role="alert">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <h2 class="card-title text-center mb-4" style="color: rgb(82, 124, 222);">Dərs Əlavə Et</h2>
+                    <form id="lessonForm" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_classroom">Auditoriya:</label>
+                            {{ form.classroom }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_teacher">Müəllim:</label>
+                            {{ form.teacher }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_time_interval">Dərs Aralığı:</label>
+                            {{ form.time_interval }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_date">Tarix:</label>
+                            {{ form.date }}
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">
+                                Qrup:
+                            </label>
+                            {{ form.group_number}}  
+                        </div>
+                        <div class="form-group">
+                            <label for="id_topic_name">Dərsin Adı:</label>
+                            {{ form.topic_name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_lesson_week">Dərs həftəsi:</label>
+                            {{ form.lesson_week }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_lesson_type">Dərsin tipi:</label>
+                            {{ form.lesson_type }}
+                        </div>
+                        <div class="form-group">
+                            <label for="id_lesson_kind">Dərsin forması:</label>
+                            {{ form.lesson_kind }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Əlavə Et</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div class="container mt-5">
+    <h2>Add Lesson</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_div }}
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+</div> -->
+<br>
+
+{% endblock content %}
+
+
+{% block scripts %}
+
+<script>
+    $("#id_group_number").select2();
+</script>
+
+{% endblock scripts %}

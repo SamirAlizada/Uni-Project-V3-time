@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Auditoriya Paneli</h2>
+    <form method="GET" class="mb-3">
+        <div class="form-inline mb-4">
+            <input type="text" name="q" class="form-control mr-sm-2" placeholder="Axtarış adını daxil edin">
+            <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Axtar</button>
+            <!-- <button type="submit" class="btn btn-primary">Axtar</button> -->
+        </div>
+    </form>
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">№</th>
+                <th scope="col">Tip</th>
+                <th scope="col">İnternet</th>
+                <th scope="col">Tutum</th>
+                <th scope="col">Əməliyyatlar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for classroom in classrooms %}
+            <tr>
+                <td>{{ classroom.class_number }}</td>
+                <td>{{ classroom.is_simple_classroom }}</td>
+                <td>{{ classroom.classroom_network_types }}</td>
+                <td>{{ classroom.class_capacity }}</td>
+                <td>
+                    <a href="{% url 'update_classroom' classroom.pk %}" class="btn btn-sm btn-info">Düzəliş et</a>
+                    <a href="{% url 'delete_classroom' classroom.pk %}" class="btn btn-sm btn-danger">Sil</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<br>
+<br>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+{% if messages %}
+<div class="alert alert-danger" role="alert">
+    {% for message in messages %}
+    {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container mt-4">
+<h2 class="mb-4" style="color: rgb(82, 124, 222);">Auditoriyanı Yenilə</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Yenilə</button>
+</form>
+</div>
+{% endblock %}

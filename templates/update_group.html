@@ -1,0 +1,13 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+<h2 class="mb-4" style="color: rgb(82, 124, 222);">Qrupu Yenilə</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Yenilə</button>
+</form>
+</div>
+{% endblock %}

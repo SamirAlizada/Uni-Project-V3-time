@@ -1,0 +1,340 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    #filter {
+        background-color: #f2f2f2;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        font-size: xx-large;
+    }
+
+    .row {
+        margin-bottom: 8px;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+    }
+
+    input[type="text"],
+    select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+    }
+
+    button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        margin-left: 10px;
+    }
+
+    .btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+    .highlighted {
+        background-color: yellow;
+    }
+
+    .highlighted2 {
+        background-color: white;
+    }
+
+    .highlighted3 {
+        background-color: rgb(202, 18, 239);
+    }
+
+    .br20{
+        border-radius: 10px;
+    }
+</style>
+
+<div class="row m-lg-1">
+    <div class="col-md-2">
+
+    </div>
+
+    <div class="col-md-8 text-center">
+        <div class="row justify-content-center" style="padding: 0; margin: 0;">
+            <h1 style="word-wrap: break-word;">Azərbaycan Dövlət İqtisad Üniversiteti</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6" style="background-color: black; height: 1px;">
+
+            </div>
+        </div>
+        <div class="row justify-content-center" style="padding: 0; margin: 0;">
+            <h1 style="word-wrap: break-word;">Biznes və Menecment fakültəsi</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-5" style="background-color: black; height: 1px !important;">
+
+            </div>
+        </div>
+        <h6 class="text-center">
+            Həftəlik Dərs Cədvəli ({{ start_date|date:"d F" }} - {{ end_date|date:"d F" }})
+        </h6>
+    </div>
+    <div class="col-md-2">
+        <img style="height: 110px; width: 110px;" src="https://upload.wikimedia.org/wikipedia/az/6/61/UNEC_1.png"
+            alt="logo">
+    </div>
+</div>
+
+<div class="container-fluid">
+
+    <p id="toggleLessons" class="cursor-pointer" style="cursor: pointer;">
+        Daha çox dərs göstər <strong>∨</strong>
+        <!-- <i class="fa fa-angle-down"></i> -->
+    </p>
+
+    <div class="row no-gutters">
+        {% for day, lessons in lessons_by_day.items %}
+        <div class="col">
+            <div class="card br20" style="background-color: whitesmoke;">
+                <div class="card-body">
+                    <p class="card-text text-center">{{ day }}</p>
+                </div>
+            </div>
+            {% if lessons %}
+            {% for lesson in lessons|slice:":2" %}
+            <div class="card br20" {% if lesson.is_past %}style="background-color: lightgray; opacity: 0.7; border-radius: 15px;" {% endif %}>
+                <div class="card-body">
+                    <div class="row justify-content-center align-items-center">
+                        {{ lesson.time_interval }}
+                    </div>
+                    <div class="row justify-content-center align-items-center">
+                        {% for group in lesson.group_number.all %}
+                            {{ group }}
+                        {% endfor %}
+                    </div>
+                    <div class="row justify-content-center align-items-center">
+                        {{ lesson.teacher }}
+                    </div>
+                    <div class="row justify-content-center align-items-center">
+                        {{ lesson.topic_name }}
+                    </div>
+                    <div class="row justify-content-center align-items-center">
+                        {{ lesson.classroom.class_number }}
+                        &nbsp; <i class="fa-solid fa-info" data-toggle="tooltip" data-placement="bottom"
+                            title="Tutum: {{lesson.classroom.class_capacity}} - {{lesson.classroom.classroom_network_types}}"></i>
+                    </div>
+                    <div class="more-details" id="details-{{ lesson.id }}" style="display: none;">
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.lesson_kind }}
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.date|date:"d/m/Y" }}
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.lesson_week }} həftə
+                        </div>
+                        <div class="row">
+                            {% if lesson.classroom.is_simple_classroom == 'hibrid' %}
+                            <div class="highlighted col-md-12">&nbsp;</div>
+                            {% elif lesson.classroom.is_simple_classroom == 'laboratoriya' %}
+                            <div class="highlighted3 col-md-12">&nbsp;</div>
+                            {% else %}
+                            <div class="highlighted2 col-md-12">&nbsp;</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="row justify-content-center align-items-center" style="margin-bottom: 0; height: 24px;">
+                        <p id="toggleDetails" class="cursor-pointer" style="cursor: pointer;" data-details-id="{{ lesson.id }}">
+                            Ətraflı<strong>∨</strong>
+                            <!-- <i class="fa fa-angle-down"></i> -->
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if lessons|length > 2 %}
+            <div class="more-lessons" id="lessons" style="display: none;">
+                {% for lesson in lessons|slice:"2:" %}
+                <div class="card br20" {% if lesson.is_past %}style="background-color: lightgray; opacity: 0.7; border-radius: 15px;" {% endif %}>
+                    <div class="card-body">
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.time_interval }}
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            {% for group in lesson.group_number.all %}
+                                {{ group }}
+                            {% endfor %}
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.teacher }}
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.topic_name }}
+                        </div>
+                        <div class="row justify-content-center align-items-center">
+                            {{ lesson.classroom.class_number }}
+                            &nbsp; <i class="fa-solid fa-info" data-toggle="tooltip" data-placement="bottom"
+                                title="Tutum: {{lesson.classroom.class_capacity}} - {{lesson.classroom.classroom_network_types}}"></i>
+                        </div>
+                        <div class="more-details" id="details-{{ lesson.id }}" style="display: none;">
+                            <div class="row justify-content-center align-items-center">
+                                {{ lesson.lesson_kind }}
+                            </div>
+                            <div class="row justify-content-center align-items-center">
+                                {{ lesson.date|date:"d/m/Y" }}
+                            </div>
+                            <div class="row justify-content-center align-items-center">
+                                {{ lesson.lesson_week }} həftə
+                            </div>
+                            <div class="row">
+                                {% if lesson.classroom.is_simple_classroom == 'hibrid' %}
+                                <div class="highlighted col-md-12">&nbsp;</div>
+                                {% elif lesson.classroom.is_simple_classroom == 'laboratoriya' %}
+                                <div class="highlighted3 col-md-12">&nbsp;</div>
+                                {% else %}
+                                <div class="highlighted2 col-md-12">&nbsp;</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row justify-content-center align-items-center" style="margin-bottom: 0; height: 24px;">
+                            <p id="toggleDetails" class="cursor-pointer" style="cursor: pointer;" data-details-id="{{ lesson.id }}">
+                                Ətraflı<strong>∨</strong>
+                                <!-- <i class="fa fa-angle-down"></i> -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="card br20">
+                <div class="card-body">
+                    <p class="card-text text-center">Dərs yoxdur</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<br>
+<br>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggleButton = document.getElementById("toggleFilters");
+        const filters = document.getElementById("filters");
+        const resetButton = document.getElementById("resetButton");
+
+        // Keep visibility of filters in local storage
+        let filtersVisible = localStorage.getItem("filtersVisible");
+
+        // If there is a value stored in local storage, set the filter accordingly
+        if (filtersVisible === "true") {
+            filters.style.display = "flex";
+            toggleButton.innerHTML = 'Genişləndirilmiş filterləri gizlə <i class="fa fa-angle-up"></i>';
+        }
+
+        toggleButton.addEventListener("click", function () {
+            if (filters.style.display === "none") {
+                filters.style.display = "flex";
+                localStorage.setItem("filtersVisible", "true");
+                toggleButton.innerHTML = 'Genişləndirilmiş filterləri gizlə <i class="fa fa-angle-up"></i>';
+
+            } else {
+                filters.style.display = "none";
+                localStorage.setItem("filtersVisible", "false");
+                toggleButton.innerHTML = 'Genişləndirilmiş filterləri göstər <i class="fa fa-angle-down"></i>';
+            }
+        });
+
+        // Click the reset button after 10 seconds
+        setTimeout(function () {
+            resetButton.click();
+        }, 10000000); // After 10 seconds (10,000 milliseconds)
+    });
+
+
+    // Limit 2 lessons
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggleButton = document.getElementById("toggleLessons");
+
+        // Using querySelectorAll to select all elements
+        const lessons = document.querySelectorAll("#lessons");
+
+        // Action to be taken for each item in lessons NodeList
+        lessons.forEach(function (lesson) {
+            // If "lessonsVisible" is true the element will be shown, otherwise it will be hidden
+            if (localStorage.getItem("lessonsVisible") === "true") {
+                lesson.style.display = "block";
+                toggleButton.innerHTML = 'Daha az dərs göstər <strong>∧</strong>';
+            } else {
+                lesson.style.display = "none";
+            }
+        });
+
+        toggleButton.addEventListener("click", function () {
+            // Action to be taken for each item in lessons NodeList
+            lessons.forEach(function (lesson) {
+                // If the item is hidden it will be shown, if it is shown it will be hidden
+                if (lesson.style.display === "none") {
+                    lesson.style.display = "block";
+                    localStorage.setItem("lessonsVisible", "true");
+                    toggleButton.innerHTML = 'Daha az dərs göstər <strong>∧</strong>';
+                } else {
+                    lesson.style.display = "none";
+                    localStorage.setItem("lessonsVisible", "false");
+                    toggleButton.innerHTML = 'Daha çox dərs göstər <strong>∨</strong>';
+                }
+            });
+        });
+    });
+
+
+
+
+
+    // Details
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggleButtons = document.querySelectorAll("[id^='toggleDetails']");
+
+        toggleButtons.forEach(function (toggleButton) {
+            toggleButton.addEventListener("click", function () {
+                const lessonId = toggleButton.dataset.detailsId;
+                const details = document.getElementById("details-" + lessonId);
+
+                if (details.style.display === "none") {
+                    details.style.display = "block";
+                    toggleButton.innerHTML = 'Kiçilt<strong>∧</strong>';
+                } else {
+                    details.style.display = "none";
+                    toggleButton.innerHTML = 'Ətraflı<strong>∨</strong>';
+                }
+            });
+        });
+    });
+
+</script>
+
+
+{% endblock %}
