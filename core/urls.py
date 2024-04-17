@@ -18,7 +18,7 @@ from django.urls import path, include
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    path('admin/', login_required(admin.site.urls)),
+    path('admin/', admin.site.urls),
     path('', include('lesson_calendar.urls')),
 
 ]

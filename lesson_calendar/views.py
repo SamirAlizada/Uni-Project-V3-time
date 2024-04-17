@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import LessonForm
 from .models import Lesson, Teacher, Classroom, Group
 from django.contrib import messages
-from .forms import LessonFilterForm, ClassroomForm, TeacherForm, GroupForm
+from .forms import LessonForm, LessonFilterForm, ClassroomForm, TeacherForm, GroupForm
 from datetime import datetime, timedelta
 from django.db.models import F, Q
 from django.contrib.auth import authenticate, login, logout
