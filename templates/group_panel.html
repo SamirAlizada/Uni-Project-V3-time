@@ -24,7 +24,7 @@
                 <td>{{ group.group_number }}</td>
                 <td>
                     <a href="{% url 'update_group' group.pk %}" class="btn btn-sm btn-info">Düzəliş et</a>
-                    <a href="{% url 'delete_group' group.pk %}" class="btn btn-sm btn-danger">Sil</a>
+                    <a href="{% url 'delete_group' group.pk %}" class="btn btn-sm btn-danger" onclick="return confirm('Bu qrupu silmək istədiyinizə əminsiniz?')">Sil</a>
                 </td>
             </tr>
             {% endfor %}
