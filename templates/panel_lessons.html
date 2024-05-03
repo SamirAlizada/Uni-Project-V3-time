@@ -22,6 +22,14 @@
         color: #fff;
     }
 
+    .b-br {
+        border: 1px solid gray; 
+        border-radius: 3px;
+    }
+
+    .d-inline {
+        display: inline-block;
+    }
 </style>
 
 
@@ -77,11 +85,11 @@
                     </div>
                     <div class="row">
                         {% if lesson.classroom.is_simple_classroom == 'hibrid' %}
-                        <div class="highlighted col-md-12">&nbsp;</div>
+                        <div class="highlighted d-inline b-br col-md-12">&nbsp;</div>
                         {% elif lesson.classroom.is_simple_classroom == 'laboratoriya' %}
-                        <div class="highlighted3 col-md-12">&nbsp;</div>
+                        <div class="highlighted3 d-inline b-br col-md-12">&nbsp;</div>
                         {% else %}
-                        <div class="highlighted2 col-md-12">&nbsp;</div>
+                        <div class="highlighted2 d-inline b-br col-md-12">&nbsp;</div>
                         {% endif %}
                     </div>
                     <br>

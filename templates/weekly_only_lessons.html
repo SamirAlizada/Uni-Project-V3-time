@@ -69,6 +69,16 @@
     .br20{
         border-radius: 10px;
     }
+
+    .b-br {
+        border: 1px solid gray; 
+        border-radius: 3px;
+    }
+
+    .d-inline {
+        display: inline-block;
+    }
+
 </style>
 
 <div class="row m-lg-1">
@@ -98,8 +108,8 @@
         </h6>
     </div>
     <div class="col-md-2">
-        <img style="height: 110px; width: 110px;" src="https://upload.wikimedia.org/wikipedia/az/6/61/UNEC_1.png"
-            alt="logo">
+        <img style="height: 110px; width: 110px;" src="https://apa.az/storage/news/2024/january/17/resize/65a77ac0320d265a77ac0320d3170547474965a77ac0320ce65a77ac0320d0.jpg"
+            alt="logo"> <!--https://upload.wikimedia.org/wikipedia/az/6/61/UNEC_1.png -->
     </div>
 </div>
 
@@ -127,7 +137,7 @@
                     </div>
                     <div class="row justify-content-center align-items-center">
                         {% for group in lesson.group_number.all %}
-                            {{ group }}
+                            {{ group }}/
                         {% endfor %}
                     </div>
                     <div class="row justify-content-center align-items-center">
@@ -153,11 +163,11 @@
                         </div>
                         <div class="row">
                             {% if lesson.classroom.is_simple_classroom == 'hibrid' %}
-                            <div class="highlighted col-md-12">&nbsp;</div>
+                            <div class="highlighted d-inline b-br col-md-12">&nbsp;</div>
                             {% elif lesson.classroom.is_simple_classroom == 'laboratoriya' %}
-                            <div class="highlighted3 col-md-12">&nbsp;</div>
+                            <div class="highlighted3 d-inline b-br col-md-12">&nbsp;</div>
                             {% else %}
-                            <div class="highlighted2 col-md-12">&nbsp;</div>
+                            <div class="highlighted2 d-inline b-br col-md-12">&nbsp;</div>
                             {% endif %}
                         </div>
                     </div>
@@ -181,7 +191,7 @@
                         </div>
                         <div class="row justify-content-center align-items-center">
                             {% for group in lesson.group_number.all %}
-                                {{ group }}
+                                {{ group }}/  
                             {% endfor %}
                         </div>
                         <div class="row justify-content-center align-items-center">
@@ -207,11 +217,11 @@
                             </div>
                             <div class="row">
                                 {% if lesson.classroom.is_simple_classroom == 'hibrid' %}
-                                <div class="highlighted col-md-12">&nbsp;</div>
+                                <div class="highlighted d-inline b-br col-md-12">&nbsp;</div>
                                 {% elif lesson.classroom.is_simple_classroom == 'laboratoriya' %}
-                                <div class="highlighted3 col-md-12">&nbsp;</div>
+                                <div class="highlighted3 d-inline b-br col-md-12">&nbsp;</div>
                                 {% else %}
-                                <div class="highlighted2 col-md-12">&nbsp;</div>
+                                <div class="highlighted2 d-inline b-br col-md-12">&nbsp;</div>
                                 {% endif %}
                             </div>
                         </div>

@@ -416,6 +416,13 @@ def weekly_limited_filtered_lessons(request):
             # Sort the lessons within each day by their time intervals
             for day, lessons in lessons_by_day.items():
                 lessons_by_day[day] = sorted(lessons, key=lambda x: x.time_interval)
+                        
+            # Remove days VI and VII from the dictionary if they have no lessons
+            if not lessons_by_day.get('VI'):
+                del lessons_by_day['VI']
+
+            if not lessons_by_day.get('VII'):
+                del lessons_by_day['VII']
 
             return render(request, 'weekly_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'start_date' : start_date, 'end_date' : end_date, 'show_filter_button': show_filter_button})
 
@@ -496,6 +503,13 @@ def table_lessons_filtered_list(request):
                     lesson.is_past = False
                 
                 lessons_by_day[roman_day].append(lesson)
+            
+            # Remove days VI and VII from the dictionary if they have no lessons
+            if not lessons_by_day.get('VI'):
+                del lessons_by_day['VI']
+
+            if not lessons_by_day.get('VII'):
+                del lessons_by_day['VII']
 
             return render(request, 'table_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
 

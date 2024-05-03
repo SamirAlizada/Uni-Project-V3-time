@@ -44,10 +44,11 @@ class Lesson(models.Model):
     topic_name = models.CharField(max_length=100)
 
     LESSON_WEEK_CHOICES = (
+        ('Normal', 'Normal'),
         ('Üst', 'Üst'),
         ('Alt', 'Alt'),
     )   
-    lesson_week = models.CharField(max_length=10, choices=LESSON_WEEK_CHOICES, default= 'Üst')
+    lesson_week = models.CharField(max_length=10, choices=LESSON_WEEK_CHOICES, default= 'Normal')
 
     LESSON_TYPES = (
         ('adi', 'Adi'),
