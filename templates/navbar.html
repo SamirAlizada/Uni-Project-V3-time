@@ -132,8 +132,8 @@
                   </div>
                   <div class="col-md-4 m-auto">
                     <div class="">
-                      <button type="submit" class="btn btn-primary">Filtr</button>
-                      <a href="?refresh=1" class="btn btn-secondary">Sıfırla</a>
+                      <button type="submit" id="filterButton" class="btn btn-primary">Filtr</button>
+                      <a href="?refresh=1" id="resetButton" class="btn btn-secondary">Sıfırla</a>
                     </div>
                   </div>
                 </div>
@@ -189,6 +189,24 @@
 
   <script>
     $("#id_group_number").select2();
+
+    // Set a 10-second timer for the page to refresh
+    let timeout = setTimeout(() => {
+        // Refresh site
+        window.location.href = "?refresh=1";
+    }, 9900000); // 10 seconds
+
+    // Assign an `id` to the "Reset" button (e.g. "resetButton")
+    const resetButton = document.querySelector('.btn-secondary');
+
+    // Check if the "Reset" button is clicked
+    if (resetButton) {
+        resetButton.addEventListener('click', () => {
+            // Cancel the timer when the button is clicked
+            clearTimeout(timeout);
+        });
+    }
+
   </script>
 
 </html>
