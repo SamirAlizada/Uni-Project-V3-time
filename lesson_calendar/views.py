@@ -10,59 +10,148 @@ def add_lesson(request):
     if request.method == 'POST':
         form = LessonForm(request.POST)
         if form.is_valid():
-            date = form.cleaned_data['date']
+            # Get information from the form
+            lesson_date = form.cleaned_data['date']
+            end_date = form.cleaned_data.get('end_date')
             classroom = form.cleaned_data['classroom']
             time_interval = form.cleaned_data['time_interval']
             teacher = form.cleaned_data['teacher']
             group_numbers = form.cleaned_data['group_number']
+            lesson_week = form.cleaned_data.get('lesson_week')
+            topic_name = form.cleaned_data['topic_name']
+            lesson_type = form.cleaned_data['lesson_type']
+            lesson_kind = form.cleaned_data['lesson_kind']
 
-            start_time, end_time = time_interval.split('-')
+            if lesson_week == 'Normal' and end_date:
+                # Set the start date to current_date
+                current_date = lesson_date
+                start_weekday = lesson_date.weekday()  # Day of the week of start date
 
-            # 1. Check if there are any lessons on the selected date
-            existing_lessons = Lesson.objects.filter(date=date)
-            if existing_lessons.exists():
-                # 2. Check if there are lessons in the selected classroom
+                while current_date <= end_date:
+                    if current_date.weekday() == start_weekday:
+                        # Check for course conflicts
+                        existing_lessons = Lesson.objects.filter(date=current_date)
+
+                        existing_classroom_lessons = existing_lessons.filter(classroom=classroom)
+                        existing_teacher_lessons = existing_lessons.filter(teacher=teacher)
+                        existing_group_lessons = existing_lessons.filter(group_number__in=group_numbers)
+
+                        if existing_classroom_lessons.filter(time_interval=time_interval).exists():
+                            messages.error(request, f"{lesson_date} tarixində {time_interval} arasında {classroom.class_number} nömrəli auditoriyada dərs var!")
+                            break
+                        
+                        if existing_teacher_lessons.filter(time_interval=time_interval).exists():
+                            messages.error(request, f"{lesson_date} tarixində {time_interval} arasında müəllim {teacher} dərsi var!")
+                            break
+                        
+                        if existing_group_lessons.filter(time_interval=time_interval).exists():
+                            messages.error(request, f"{lesson_date} tarixində {time_interval} arasında seçilmiş qrupun artıq dərsi var!")
+                            break
+                        
+                        # If there is no course conflict, add a course
+                        lesson_instance = Lesson(
+                            classroom=classroom,
+                            teacher=teacher,
+                            date=current_date,
+                            end_date=end_date,
+                            topic_name=topic_name,
+                            lesson_week=lesson_week,
+                            lesson_type=lesson_type,
+                            lesson_kind=lesson_kind,
+                            time_interval=time_interval
+                        )
+                        lesson_instance.save()
+                        lesson_instance.group_number.set(group_numbers)
+                        messages.success(request, f"{current_date} tarixinə dərs uğurla əlavə edildi.")
+                    
+                    current_date += timedelta(days=1)  # Scroll daily and add lessons only for the same day of the week
+
+                return redirect('add_lesson')
+
+            elif lesson_week in ['Alt', 'Üst'] and end_date:
+                current_date = lesson_date
+                start_weekday = lesson_date.weekday()
+
+                while current_date <= end_date:
+                    if current_date.weekday() == start_weekday:
+                        # Check for course conflicts
+                        existing_lessons = Lesson.objects.filter(date=current_date)
+
+                        existing_classroom_lessons = existing_lessons.filter(classroom=classroom)
+                        existing_teacher_lessons = existing_lessons.filter(teacher=teacher)
+                        existing_group_lessons = existing_lessons.filter(group_number__in=group_numbers)
+
+                        if existing_classroom_lessons.filter(time_interval=time_interval).exists():
+                            messages.error(request, f"{lesson_date} tarixində {time_interval} arasında {classroom.class_number} nömrəli auditoriyada dərs var!")
+                            break
+                        
+                        if existing_teacher_lessons.filter(time_interval=time_interval).exists():
+                            messages.error(request, f"{lesson_date} tarixində {time_interval} arasında müəllim {teacher} dərsi var!")
+                            break
+                        
+                        if existing_group_lessons.filter(time_interval=time_interval).exists():
+                            messages.error(request, f"{lesson_date} tarixində {time_interval} arasında seçilmiş qrupun artıq dərsi var!")
+                            break
+                        
+                        # If there is no course conflict, add a course
+                        lesson_instance = Lesson(
+                            classroom=classroom,
+                            teacher=teacher,
+                            date=current_date,
+                            end_date=end_date,
+                            topic_name=topic_name,
+                            lesson_week=lesson_week,
+                            lesson_type=lesson_type,
+                            lesson_kind=lesson_kind,
+                            time_interval=time_interval
+                        )
+                        lesson_instance.save()
+                        lesson_instance.group_number.set(group_numbers)
+                        messages.success(request, f"{current_date} tarixinə dərs uğurla əlavə edildi.")
+                    
+                    current_date += timedelta(weeks=2)  # Move forward 2 weeks, i.e. leave 1 week blank
+                
+                return redirect('add_lesson')
+
+            else:
+                # Adding a single course
+                existing_lessons = Lesson.objects.filter(date=lesson_date)
+
                 existing_classroom_lessons = existing_lessons.filter(classroom=classroom)
                 existing_teacher_lessons = existing_lessons.filter(teacher=teacher)
                 existing_group_lessons = existing_lessons.filter(group_number__in=group_numbers)
+
+                if existing_classroom_lessons.filter(time_interval=time_interval).exists():
+                    messages.error(request, f"{lesson_date} tarixində {time_interval} arasında {classroom.class_number} nömrəli auditoriyada dərs var!")
                 
-                if existing_classroom_lessons.exists():
-                    # 3. Check if there is any overlap with existing lessons in the same classroom
-                    overlap_lessons = existing_classroom_lessons.filter(time_interval=time_interval)
-                    if overlap_lessons.exists():
-                        messages.error(request, f"{date} tarixində {time_interval} saat aralığında {classroom.class_number} nömrəli otağda dərs var!")
-                    else:
-                        form.save()
-                        form.instance.group_number.set(group_numbers)  # Many-to-many ilişkisi için grup numaralarını atayın
-                        messages.success(request, 'Dərs uğurla əlavə edildi.')
-                        return redirect('add_lesson')
-
-                elif existing_teacher_lessons.exists():
-                    overlap_teacher_lessons = existing_teacher_lessons.filter(time_interval=time_interval)
-                    if overlap_teacher_lessons.exists():
-                        messages.error(request, f"{date} tarixində və {time_interval} saat aralığında müəllim {teacher} dərsi var!")
-
-                # Check if there are lessons for the same group at the same time
-                elif existing_group_lessons.exists():
-                    overlap_group_lessons = existing_group_lessons.filter(time_interval=time_interval)
-                    if overlap_group_lessons.exists():
-                        messages.error(request, f"{date} tarixində və {time_interval} saat aralığında seçdiyiniz qrupunun dərsi var!")
-
-                    else:
-                        form.save()
-                        messages.success(request, 'Dərs uğurla əlavə edildi.')
-                        return redirect('add_lesson')
-
+                elif existing_teacher_lessons.filter(time_interval=time_interval).exists():
+                    messages.error(request, f"{lesson_date} tarixində {time_interval} arasında müəllim {teacher} dərsi var!")
+                
+                elif existing_group_lessons.filter(time_interval=time_interval).exists():
+                    messages.error(request, f"{lesson_date} tarixində {time_interval} arasında seçilmiş qrupun artıq dərsi var!")
+                
                 else:
-                    form.save()
+                    lesson_instance = Lesson(
+                        classroom=classroom,
+                        teacher=teacher,
+                        date=lesson_date,
+                        end_date=end_date,
+                        topic_name=topic_name,
+                        lesson_week=lesson_week,
+                        lesson_type=lesson_type,
+                        lesson_kind=lesson_kind,
+                        time_interval=time_interval
+                    )
+                    lesson_instance.save()
+                    lesson_instance.group_number.set(group_numbers)
                     messages.success(request, 'Dərs uğurla əlavə edildi.')
-                    return redirect('add_lesson')
-            else:
-                form.save()
-                messages.success(request, 'Dərs uğurla əlavə edildi.')
+                
                 return redirect('add_lesson')
+        else:
+            messages.error(request, 'Zəhmət olmasa formu düzgün doldurun.')
     else:
         form = LessonForm()
+
     return render(request, 'add_lesson.html', {'form': form})
 
 def delete_lesson(request, pk):
@@ -161,7 +250,7 @@ def update_lesson(request, pk):
             # Grup numaralarının güncellendiğini kontrol et
             if not set(lesson.group_number.all()) == set(new_lesson.group_number.all()):
                 if has_group_conflict(new_lesson):
-                    messages.error(request, "Grup numaraları güncellenemedi.")
+                    messages.error(request, "Qrup nömrələrini yeniləmək mümkün olmadı.")
                     return render(request, 'update_lesson.html', {'form': form})
 
             print("Yeni Grup Numaraları:", new_lesson.group_number.all())
