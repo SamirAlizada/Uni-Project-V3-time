@@ -189,24 +189,27 @@
 
   <script>
     $("#id_group_number").select2();
-
-    // Set a 10-second timer for the page to refresh
-    let timeout = setTimeout(() => {
-        // Refresh site
-        window.location.href = "?refresh=1";
-    }, 9900000); // 10 seconds
-
-    // Assign an `id` to the "Reset" button (e.g. "resetButton")
-    const resetButton = document.querySelector('.btn-secondary');
-
-    // Check if the "Reset" button is clicked
-    if (resetButton) {
-        resetButton.addEventListener('click', () => {
-            // Cancel the timer when the button is clicked
-            clearTimeout(timeout);
-        });
-    }
-
   </script>
+
+{% if show_filter_button %}
+<script>
+  // Set a 10-second timer for the page to refresh
+  let timeout = setTimeout(() => {
+    // Refresh site
+    window.location.href = "?refresh=1";
+  }, 30000); // 30 seconds
+
+  // Assign an `id` to the "Reset" button (e.g. "resetButton")
+  const resetButton = document.querySelector('.btn-secondary');
+
+  // Check if the "Reset" button is clicked
+  if (resetButton) {
+    resetButton.addEventListener('click', () => {
+      // Cancel the timer when the button is clicked
+      clearTimeout(timeout);
+    });
+  }
+</script>
+{% endif %}
 
 </html>
