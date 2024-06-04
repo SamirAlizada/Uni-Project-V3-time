@@ -1,19 +1,25 @@
 from django import forms
 from .models import Lesson, Teacher, Classroom, Group
+from django.contrib.admin.widgets import AdminDateWidget
+
 
 class LessonForm(forms.ModelForm):
+    date = forms.DateField(widget=AdminDateWidget)
+    end_date = forms.DateField(widget=AdminDateWidget, required=False)
+
     def __init__(self, *args, **kwargs):
         super(LessonForm, self).__init__(*args, **kwargs)
         self.fields['group_number'].widget.attrs['class'] = 'form-control'  # Add form control class for group numbers
 
     class Meta:
         model = Lesson
-        fields = ['classroom', 'teacher', 'time_interval', 'date', 'group_number', 'topic_name', 'lesson_week', 'lesson_type', 'lesson_kind']
+        fields = ['classroom', 'teacher', 'time_interval', 'date', 'end_date', 'group_number', 'topic_name', 'lesson_week', 'lesson_type', 'lesson_kind']
         labels = {
             'classroom': 'Auditoriya',
             'teacher': 'Müəllim',
             'time_interval': 'Dərs aralığı',
             'date': 'Tarix',
+            'end_date': 'Bitiş Tarixi',
             'group_number': 'Qrup nömrəsi',
             'topic_name': 'Dərsin Adı:',
             'lesson_week': 'Dərs həftəsi',
@@ -26,6 +32,7 @@ class LessonForm(forms.ModelForm):
             'time_interval': forms.Select(choices=Lesson.TIME_INTERVALS, attrs={'class': 'form-control'}),
             # 'date': forms.DateInput(format='%d%m%Y', attrs={'class': 'form-control', 'type': 'date'}),
             'date': forms.DateInput(attrs={'class': 'form-control'}),
+            'end_date': forms.DateInput(attrs={'class': 'form-control'}),
             'topic_name': forms.TextInput(attrs={'class': 'form-control'}),
             'lesson_week': forms.Select(choices=Lesson.LESSON_WEEK_CHOICES, attrs={'class': 'form-control'}),
             'lesson_type': forms.Select(choices=Lesson.LESSON_TYPES, attrs={'class': 'form-control'}),
