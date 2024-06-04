@@ -41,6 +41,7 @@ class Lesson(models.Model):
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     group_number = models.ManyToManyField(Group)
     date = models.DateField(default=timezone.now)
+    end_date = models.DateField(null=True, blank=True)
     topic_name = models.CharField(max_length=100)
 
     LESSON_WEEK_CHOICES = (
