@@ -724,7 +724,7 @@ def daily_limited_filtered_lessons(request):
 def panel_lessons(request):
     now = datetime.now()
     today = now.date()
-    show_filter_button = False
+    show_filter_button = True
 
     if request.method == 'GET':
         if 'refresh' in request.GET:
@@ -791,6 +791,13 @@ def panel_lessons(request):
                     lesson.is_past = False
                 
                 lessons_by_day[roman_day].append(lesson)
+                
+            # Remove days VI and VII from the dictionary if they have no lessons
+            if not lessons_by_day.get('VI'):
+                del lessons_by_day['VI']
+
+            if not lessons_by_day.get('VII'):
+                del lessons_by_day['VII']
 
             return render(request, 'panel_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
 
