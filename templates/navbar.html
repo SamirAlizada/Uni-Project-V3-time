@@ -25,8 +25,50 @@
     #form-group-number .select2 .select2-selection{
       width: 200px !important;
       height: 46px !important;
+      border-radius: 5px !important;
     }
 
+    #id_time_interval{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
+
+    #id_classroom{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
+    
+    #id_teacher{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
+    
+    #id_lesson_type{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
+
+    #id_lesson_week{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
+
+    #id_lesson_kind{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
+
+    #id_day_of_week{
+      width: 200px !important;
+      height: 46px !important;
+      border-radius: 5px !important;
+    }
   </style>
 
   <body>
@@ -77,7 +119,9 @@
                       <label class="control-label">
                         Saat aralığı:
                       </label>
-                      {{form.time_interval}}
+                      <div id="id_time_interval">
+                        {{form.time_interval}}  
+                      </div>
                     </div>
                   </div>
                   <div class="col-md-4">

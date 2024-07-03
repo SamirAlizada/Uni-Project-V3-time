@@ -1,13 +1,30 @@
 {% extends 'index.html' %}
 
 {% block content %}
-
-<div class="container mt-4">
-<h2 class="mb-4" style="color: rgb(82, 124, 222);">Müəllimi Yenilə</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Yenilə</button>
-</form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 justify-content-center">
+            <div class="card">
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="alert alert-success" role="alert">
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <h2 class="card-title text-center mb-4">Müəllimi Düzəliş Et</h2>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="id_name">Müəllimin Adı:</label>
+                            {{ form.name }}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Düzəliş Et</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-{% endblock %}
+{% endblock content %}
