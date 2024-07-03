@@ -732,7 +732,7 @@ def panel_lessons(request):
         form = LessonFilterForm(request.GET)
         if form.is_valid():
             # Get filtering options from form
-            group_number = form.cleaned_data.get('group_number')
+            group_numbers = form.cleaned_data.get('group_number')
             teacher = form.cleaned_data.get('teacher')
             lesson_week = form.cleaned_data.get('lesson_week')
             classroom = form.cleaned_data.get('classroom')
@@ -743,8 +743,8 @@ def panel_lessons(request):
 
             # Perform filtering operations
             queryset = Lesson.objects.all()
-            if group_number:
-                queryset = queryset.filter(group_number=group_number)
+            if group_numbers:
+                queryset = queryset.filter(group_number__in=group_numbers) 
 
             if teacher:
                 queryset = queryset.filter(teacher=teacher)
