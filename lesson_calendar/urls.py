@@ -4,8 +4,6 @@ from django.contrib.auth.decorators import login_required
 
 
 urlpatterns = [
-    # ***  Panel  ***
-
     # General
     path('panel-lessons/', login_required(panel_lessons), name='panel_lessons'),
     path('teacher-panel/', login_required(teacher_panel), name='teacher_panel'),
@@ -52,5 +50,4 @@ urlpatterns = [
     path('generate-pdf/', generate_pdf, name='generate_pdf'),
     path('daily_only_lesson_to_pdf/', daily_only_lesson_to_pdf, name='daily_only_lesson_to_pdf')
 
-    
 ]
