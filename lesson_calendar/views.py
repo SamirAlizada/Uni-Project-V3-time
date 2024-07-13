@@ -152,7 +152,7 @@ def add_lesson(request):
     else:
         form = LessonForm()
 
-    return render(request, 'add_lesson.html', {'form': form})
+    return render(request, 'lesson/add_lesson.html', {'form': form})
 
 def delete_lesson(request, pk):
     lesson = Lesson.objects.get(pk=pk)
@@ -237,7 +237,7 @@ def update_lesson(request, pk):
                     if existing_lessons_in_classroom.exists():
                         # There is a conflict, show error message
                         messages.error(request, f"Bu saat aralığında seçdiyiniz auditoriyada dərs var!")
-                        return render(request, 'update_lesson.html', {'form': form})
+                        return render(request, 'lesson/update_lesson.html', {'form': form})
                 
             # 3) Check if the selected teacher has lessons in the same time period.
             existing_lessons_for_teacher = Lesson.objects.filter(date=new_lesson.date, teacher=new_lesson.teacher, time_interval=new_lesson.time_interval)
@@ -245,13 +245,13 @@ def update_lesson(request, pk):
             if existing_lessons_for_teacher.exists():
                 # There is a conflict, show error message
                 messages.error(request, "Bu saat aralığında seçdiyiniz müəllimin dərsi var!")
-                return render(request, 'update_lesson.html', {'form': form})
+                return render(request, 'lesson/update_lesson.html', {'form': form})
             
             # Grup numaralarının güncellendiğini kontrol et
             if not set(lesson.group_number.all()) == set(new_lesson.group_number.all()):
                 if has_group_conflict(new_lesson):
                     messages.error(request, "Qrup nömrələrini yeniləmək mümkün olmadı.")
-                    return render(request, 'update_lesson.html', {'form': form})
+                    return render(request, 'lesson/update_lesson.html', {'form': form})
 
             print("Yeni Grup Numaraları:", new_lesson.group_number.all())
             new_lesson.save()
@@ -259,7 +259,7 @@ def update_lesson(request, pk):
             return redirect('panel_lessons')
     
     context = {'form': form}
-    return render(request, 'update_lesson.html', context)
+    return render(request, 'lesson/update_lesson.html', context)
 
 def has_conflict(new_lesson):
     existing_lessons_on_datetime = Lesson.objects.filter(date=new_lesson.date, time_interval=new_lesson.time_interval)
@@ -301,7 +301,7 @@ def add_classroom(request):
             return redirect('add_classroom')
     else:
         form = ClassroomForm()
-    return render(request, 'add_classroom.html', {'form': form})
+    return render(request, 'classroom/add_classroom.html', {'form': form})
 
 def add_teacher(request):
     if request.method == 'POST':
@@ -312,7 +312,7 @@ def add_teacher(request):
             return redirect('add_teacher')
     else:
         form = TeacherForm()
-    return render(request, 'add_teacher.html', {'form': form})
+    return render(request, 'teacher/add_teacher.html', {'form': form})
 
 def add_group(request):
     if request.method == 'POST':
@@ -323,7 +323,7 @@ def add_group(request):
             return redirect('add_group')
     else:
         form = GroupForm()
-    return render(request, 'add_group.html', {'form': form})
+    return render(request, 'group/add_group.html', {'form': form})
 
 def update_teacher(request, pk):
     teacher = get_object_or_404(Teacher, pk=pk)
@@ -333,7 +333,7 @@ def update_teacher(request, pk):
         if form.is_valid():
             form.save()
             return redirect('teacher_panel')
-    return render(request, 'update_teacher.html', {'form': form})
+    return render(request, 'teacher/update_teacher.html', {'form': form})
 
 def update_group(request, pk):
     group = get_object_or_404(Group, pk=pk)
@@ -343,7 +343,7 @@ def update_group(request, pk):
         if form.is_valid():
             form.save()
             return redirect('group_panel')
-    return render(request, 'update_group.html', {'form': form})
+    return render(request, 'group/update_group.html', {'form': form})
 
 def delete_teacher(request, pk):
     teacher = Teacher.objects.get(pk=pk)
@@ -374,7 +374,7 @@ def update_classroom(request, pk):
     context = {
         'form': form,
     }
-    return render(request, 'update_classroom.html', context)
+    return render(request, 'classroom/update_classroom.html', context)
 
 def delete_classroom(request, pk):
     classroom = Classroom.objects.get(pk=pk)
@@ -389,7 +389,7 @@ def teacher_panel(request):
     if query:
         teachers = teachers.filter(name__icontains=query)
 
-    return render(request, 'teacher_panel.html', {'teachers': teachers})
+    return render(request, 'teacher/teacher_panel.html', {'teachers': teachers})
 
 def group_panel(request):
     groups = Group.objects.all()
@@ -398,7 +398,7 @@ def group_panel(request):
     if query:
         groups = groups.filter(group_number__icontains=query)
 
-    return render(request, 'group_panel.html', {'groups': groups})
+    return render(request, 'group/group_panel.html', {'groups': groups})
 
 def classroom_panel(request):
     classrooms = Classroom.objects.all()
@@ -407,7 +407,7 @@ def classroom_panel(request):
     if query:
         classrooms = classrooms.filter(class_number__icontains=query)
 
-    return render(request, 'classroom_panel.html', {'classrooms': classrooms})
+    return render(request, 'classroom/classroom_panel.html', {'classrooms': classrooms})
 
 def to_roman(number):
     # Convert the number to Roman numeral
@@ -513,13 +513,13 @@ def weekly_limited_filtered_lessons(request):
             if not lessons_by_day.get('VII'):
                 del lessons_by_day['VII']
 
-            return render(request, 'weekly_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'start_date' : start_date, 'end_date' : end_date, 'show_filter_button': show_filter_button})
+            return render(request, 'lesson/weekly_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'start_date' : start_date, 'end_date' : end_date, 'show_filter_button': show_filter_button})
 
     else:
         form = LessonFilterForm()
         queryset = Lesson.objects.filter(date__range=[start_date, end_date])
         context = {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button}
-        return render(request, 'weekly_only_lessons.html', context)
+        return render(request, 'lesson/weekly_only_lessons.html', context)
 
 def table_lessons_filtered_list(request):
     now = datetime.now()
@@ -600,7 +600,7 @@ def table_lessons_filtered_list(request):
             if not lessons_by_day.get('VII'):
                 del lessons_by_day['VII']
 
-            return render(request, 'table_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
+            return render(request, 'lesson/table_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
 
     else:
         form = LessonFilterForm()
@@ -625,7 +625,7 @@ def table_lessons_filtered_list(request):
             
             lessons_by_day[roman_day].append(lesson)
 
-        return render(request, 'table_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
+        return render(request, 'lesson/table_only_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
 
 def daily_limited_filtered_lessons(request):
     now = datetime.now()
@@ -698,7 +698,7 @@ def daily_limited_filtered_lessons(request):
                     lesson.is_past = False
                 lessons_by_time_interval.setdefault(lesson.time_interval, []).append(lesson)
 
-            return render(request, 'daily_only_lessons.html', {'lessons_by_time_interval': lessons_by_time_interval, 'form': form, 'today': today, 'show_filter_button': show_filter_button})
+            return render(request, 'lesson/daily_only_lessons.html', {'lessons_by_time_interval': lessons_by_time_interval, 'form': form, 'today': today, 'show_filter_button': show_filter_button})
 
     else:
         form = LessonFilterForm()
@@ -719,7 +719,7 @@ def daily_limited_filtered_lessons(request):
                 lesson.is_past = False
             lessons_by_time_interval.setdefault(lesson.time_interval, []).append(lesson)
             
-        return render(request, 'daily_only_lessons.html', {'lessons_by_time_interval': lessons_by_time_interval, 'form': form, 'today': today, 'show_filter_button': show_filter_button})
+        return render(request, 'lesson/daily_only_lessons.html', {'lessons_by_time_interval': lessons_by_time_interval, 'form': form, 'today': today, 'show_filter_button': show_filter_button})
 
 def panel_lessons(request):
     now = datetime.now()
@@ -799,7 +799,7 @@ def panel_lessons(request):
             if not lessons_by_day.get('VII'):
                 del lessons_by_day['VII']
 
-            return render(request, 'panel_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
+            return render(request, 'lesson/panel_lessons.html', {'lessons_by_day': lessons_by_day, 'form': form, 'show_filter_button': show_filter_button})
 
     else:
         form = LessonFilterForm()
@@ -824,7 +824,7 @@ def panel_lessons(request):
             
             lessons_by_day[roman_day].append(lesson)
 
-    return render(request, 'panel_lessons.html', {'lessons_by_day': lessons_by_day, 'show_filter_button': show_filter_button})
+    return render(request, 'lesson/panel_lessons.html', {'lessons_by_day': lessons_by_day, 'show_filter_button': show_filter_button})
 
 def user_login(request):
     if request.method == 'POST':
