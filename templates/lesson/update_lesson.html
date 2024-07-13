@@ -57,6 +57,42 @@
             #cardcolor {
                 background-color: rgb(250, 247, 247);
             }
+
+            #id_classroom{
+                width: 500px !important;
+                height: 46px !important;
+                border-radius: 5px !important;
+            }
+
+            #id_teacher{
+                width: 500px !important;
+                height: 46px !important;
+                border-radius: 5px !important;
+            }
+
+            #id_time_interval{
+                width: 500px !important;
+                height: 46px !important;
+                border-radius: 5px !important;
+            }
+
+            #id_lesson_week{
+                width: 500px !important;
+                height: 46px !important;
+                border-radius: 5px !important;
+            }
+
+            #id_lesson_type{
+                width: 500px !important;
+                height: 46px !important;
+                border-radius: 5px !important;
+            }
+
+            #id_lesson_kind{
+                width: 500px !important;
+                height: 46px !important;
+                border-radius: 5px !important;
+            }
         </style>
 
         <script type="text/javascript" src="/admin/jsi18n/"></script>
@@ -87,15 +123,21 @@
                                 {% csrf_token %}
                                 <div class="form-group">
                                     <label for="id_classroom">Auditoriya:</label>
-                                    {{ form.classroom }}
+                                    <div id="id_classroom">
+                                        {{ form.classroom }}
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="id_teacher">Müəllim:</label>
-                                    {{ form.teacher }}
+                                    <div id="id_teacher">
+                                        {{ form.teacher }}
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="id_time_interval">Dərs Aralığı:</label>
-                                    {{ form.time_interval }}
+                                    <div id="id_time_interval">
+                                        {{form.time_interval}}  
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="id_date">Tarix:</label>
@@ -119,7 +161,9 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="id_lesson_week">Dərs həftəsi:</label>
-                                    {{ form.lesson_week }}
+                                    <div id="id_lesson_week">
+                                        {{ form.lesson_week }}  
+                                    </div>
                                 </div>
                                 <div class="form-group">
                                     <label for="id_lesson_type">Dərsin tipi:</label>
