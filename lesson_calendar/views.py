@@ -159,66 +159,8 @@ def delete_lesson(request, pk):
     lesson.delete()
     return redirect('panel_lessons')
 
-# def update_lesson(request, pk):
-#     lesson = Lesson.objects.get(pk=pk)
-#     form = LessonForm(instance=lesson)
-
-#     if request.method == 'POST':
-#         form = LessonForm(request.POST, instance=lesson)
-#         if form.is_valid():
-#             new_lesson = form.save(commit=False)
-            
-#             # 1) Check if there are any lessons on the selected date and time
-#             existing_lessons_on_datetime = Lesson.objects.filter(date=new_lesson.date, time_interval=new_lesson.time_interval)
-#             if existing_lessons_on_datetime.exists():
-#                 # 2) Check if there are lessons in the selected classroom
-#                 existing_lessons_in_classroom = existing_lessons_on_datetime.filter(classroom=new_lesson.classroom)
-#                 if existing_lessons_in_classroom.exists():
-#                     # Exclude the current lesson from the queryset
-#                     existing_lessons_in_classroom = existing_lessons_in_classroom.exclude(pk=new_lesson.pk)
-#                     if existing_lessons_in_classroom.exists():
-#                         # There is a conflict, show error message
-#                         messages.error(request, f"Bu saat aralığında seçdiyiniz auditoriyada dərs var!")
-#                         return render(request, 'update_lesson.html', {'form': form})
-                
-#             # 3) Check if the selected teacher has lessons in the same time period.
-#             existing_lessons_for_teacher = Lesson.objects.filter(date=new_lesson.date, teacher=new_lesson.teacher, time_interval=new_lesson.time_interval)
-#             existing_lessons_for_teacher = existing_lessons_for_teacher.exclude(pk=new_lesson.pk)
-#             if existing_lessons_for_teacher.exists():
-#                 # There is a conflict, show error message
-#                 messages.error(request, "Bu saat aralığında seçdiyiniz müəllimin dərsi var!")
-#                 return render(request, 'update_lesson.html', {'form': form})
-            
-#             # 4) Check if the selected group has lessons in the same time period.
-#             # group_numbers_list = [group.group_number for group in new_lesson.group_number.all()]
-#             # existing_lessons_for_group = Lesson.objects.filter(date=new_lesson.date, group_number__in=group_numbers_list, time_interval=new_lesson.time_interval)
-#             # # existing_lessons_for_group = Lesson.objects.filter(date=new_lesson.date, group_number__in=new_lesson.group_number, time_interval=new_lesson.time_interval)
-#             # existing_lessons_for_group = existing_lessons_for_group.exclude(pk=new_lesson.pk)
-#             # if existing_lessons_for_group.exists():
-#             #     # There is a conflict, show error message
-#             #     messages.error(request, "Bu saat aralığında seçdiyiniz qrupun dərsi var!")
-#             #     return render(request, 'update_lesson.html', {'form': form})
-
-#             # Yeni dersin grup numaralarını alın
-#             for group_number in new_lesson.group_number.all():
-#                 existing_lessons_for_group = Lesson.objects.filter(date=new_lesson.date, time_interval=new_lesson.time_interval, group_number=group_number)
-#                 existing_lessons_for_group = existing_lessons_for_group.exclude(pk=new_lesson.pk)
-#                 print("existing_lessons_for_group:", existing_lessons_for_group)
-#                 if existing_lessons_for_group.exists():
-#                     messages.error(request, "Bu saat aralığında seçdiyiniz qrupun dərsi var!")
-#                     return render(request, 'update_lesson.html', {'form': form})
-
-#             # If there are no conflicts, save the form
-#             new_lesson.save()
-#             return redirect('panel_lessons')
-    
-#     context = {
-#         'form': form
-#     }
-#     return render(request, 'update_lesson.html', context)
-
 def update_lesson(request, pk):
-    lesson = Lesson.objects.get(pk=pk)
+    lesson = get_object_or_404(Lesson, pk=pk)
     form = LessonForm(instance=lesson)
 
     if request.method == 'POST':
@@ -247,41 +189,26 @@ def update_lesson(request, pk):
                 messages.error(request, "Bu saat aralığında seçdiyiniz müəllimin dərsi var!")
                 return render(request, 'lesson/update_lesson.html', {'form': form})
             
-            # Grup numaralarının güncellendiğini kontrol et
-            if not set(lesson.group_number.all()) == set(new_lesson.group_number.all()):
-                if has_group_conflict(new_lesson):
-                    messages.error(request, "Qrup nömrələrini yeniləmək mümkün olmadı.")
-                    return render(request, 'lesson/update_lesson.html', {'form': form})
-
-            print("Yeni Grup Numaraları:", new_lesson.group_number.all())
+            # 4) Check if the group numbers have conflicts
+            form.save_m2m()  # Save many-to-many relationships first to access the related groups
+            if has_group_conflict(new_lesson):
+                messages.error(request, "Bu saat aralığında seçdiyiniz qrupun dərsi var!")
+                return render(request, 'lesson/update_lesson.html', {'form': form})
+            
             new_lesson.save()
-            form.save_m2m()
             return redirect('panel_lessons')
     
     context = {'form': form}
     return render(request, 'lesson/update_lesson.html', context)
 
-def has_conflict(new_lesson):
-    existing_lessons_on_datetime = Lesson.objects.filter(date=new_lesson.date, time_interval=new_lesson.time_interval)
-    if existing_lessons_on_datetime.exists():
-        existing_lessons_in_classroom = existing_lessons_on_datetime.filter(classroom=new_lesson.classroom)
-        if existing_lessons_in_classroom.exists():
-            existing_lessons_in_classroom = existing_lessons_in_classroom.exclude(pk=new_lesson.pk)
-            if existing_lessons_in_classroom.exists():
-                return True
-
-    existing_lessons_for_teacher = Lesson.objects.filter(date=new_lesson.date, teacher=new_lesson.teacher, time_interval=new_lesson.time_interval)
-    existing_lessons_for_teacher = existing_lessons_for_teacher.exclude(pk=new_lesson.pk)
-    if existing_lessons_for_teacher.exists():
-        return True
-
-    return False
-
 def has_group_conflict(new_lesson):
-    for group_number in new_lesson.group_number.all():
-        existing_lessons_for_group = Lesson.objects.filter(date=new_lesson.date, time_interval=new_lesson.time_interval, group_number=group_number)
-        existing_lessons_for_group = existing_lessons_for_group.exclude(pk=new_lesson.pk)
-        print("existing_lessons_for_group:", existing_lessons_for_group)
+    for group in new_lesson.group_number.all():
+        existing_lessons_for_group = Lesson.objects.filter(
+            date=new_lesson.date, 
+            time_interval=new_lesson.time_interval, 
+            group_number=group
+        ).exclude(pk=new_lesson.pk)
+        
         if existing_lessons_for_group.exists():
             return True
     return False
